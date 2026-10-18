@@ -8,7 +8,7 @@ Bun 1.4.2로 도구·설치·CI·테스트를 전환했습니다. `bun.lock`을 
 
 - Astro 정적 빌드·UnoCSS 생성·TypeScript 검사·브라우저 ES 모듈 문법 검사.
 - GitHub Actions의 Ubuntu/Bun에서도 타입 생성 일치·타입 검사·12개 테스트·Astro 빌드·D1 마이그레이션/재실행·Worker 배포 dry-run 통과. Worker Previews 명령은 도움말 실행으로 확인하며 실제 배포는 미검증.
-- Worker 배포 dry-run: 정적 자산·Worker 묶음·DB/ASSETS 바인딩 확인. 실제 클라우드 배포는 수행하지 않음.
+- Worker 배포 dry-run: 정적 자산·Worker 묶음·DB/ASSETS 바인딩 확인. 에이전트가 실제 클라우드 배포를 수행하지는 않음.
 - Wrangler/workerd의 로컬 D1에 초기 마이그레이션 적용 성공. 재실행 시 미적용 마이그레이션 없음.
 - `bun:test`·`bun:sqlite`로 Bun 테스트 12개 통과. 실제 SQLite 제약·쿼리와 합성 RSA 서명 JWT를 사용하고 JWKS/Tailscale 네트워크는 모의 처리.
 - 초기 미설정·위조 JWT/신원 헤더·만료·다른 issuer/AUD·비허용 관리자·대체 도메인 차단과 upstream 호출 없음.
@@ -27,6 +27,7 @@ Bun 1.4.2와 1.4.3에서 Wrangler 강제 Bun 실행의 로컬 요청 멈춤을 �
 
 Ego Chromium에서 확인했습니다. 실제 iOS Safari/Android Chrome 또는 실제 Access 로그인 검증은 아닙니다.
 
+- 3단계 wizard에서 한 번에 한 패널만 표시, 잘못된 팀 도메인 진행 차단, 단계 제목 포커스 이동, 다섯 Secret 생성·이메일 정규화·복사 확인.
 - 실제 로컬 Worker의 초기 wizard: 새 설치 확인 없이는 키 생성 거부, 복구 파일 다운로드, 설정 다섯 개 준비, 키 가림, 390px 화면 가로 넘침 없음.
 - wizard 새로고침 후 키 복원 없음. localStorage/sessionStorage 항목 0개.
 - 별도 로컬 합성 API fixture에서 관리 화면: 프로필 추가 → 네트워크 등록 → 자동 선택, 제출 후 토큰 입력 지움, 예상 소유자 미검증 표시.
@@ -34,6 +35,14 @@ Ego Chromium에서 확인했습니다. 실제 iOS Safari/Android Chrome 또는 �
 - 관리 화면도 390px viewport에서 가로 넘침 없음과 PWA manifest 연결 확인.
 - 오프라인 에뮬레이션에서 안내·발급 거부. 복구 후 자동 발급 없음. 전체 시나리오 발급 호출 1회.
 - 자동화 도구의 탭 전환도 발급 결과를 지우므로 결과·복사 검증은 한 브라우저 실행 안에서 수행했습니다.
+
+## 업데이트 자동화
+
+`Update Keyport` 수동 Actions workflow와 기준 커밋 기반 3-way 병합을 추가했습니다. 별도 임시 Git 저장소 테스트 3개로 배포 설정 보존·원본 설정 병합·재실행·충돌/미커밋 변경 중단·이미 반영된 템플릿 처리를 검증했습니다. 전체 테스트는 15개입니다. 실제 배포 저장소에서 workflow 실행·PR 생성은 설치 PR 병합 후 별도 확인이 필요합니다.
+
+## 사용자 제공 첫 배포 로그
+
+2026-10-19 KST에 제공된 Cloudflare Workers Builds 로그에서 `ajchemist/keyport` → `alchemiakr/keyport` 복제, Bun 설치·Astro 빌드, 원격 D1 초기 마이그레이션, Worker·자산 배포 성공을 확인했습니다. 배포 주소는 `https://keyport.alchemiakr.workers.dev`입니다. 이 로그만으로 Access 정책이나 실제 wizard 완료를 검증한 것은 아닙니다.
 
 ## 남은 실제 환경 검증
 
