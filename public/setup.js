@@ -30,7 +30,32 @@ function accessSettings() {
   if (!admins.length || admins.some(s => !/^[^\s@,]+@[^\s@,]+\.[^\s@,]+$/.test(s))) throw new Error('관리자 이메일을 확인해 주세요. 여러 명이면 쉼표로 구분합니다.');
   return { APP_ORIGIN: origin.origin, ACCESS_TEAM_DOMAIN: team, ACCESS_AUD: aud, ADMIN_EMAILS: admins.join(',') };
 }
-for (const id of ['origin', 'team', 'aud', 'admins']) $(id).addEventListener('input', resetSettings);
+const edited = new Set();
+for (const id of ['origin', 'team', 'aud', 'admins']) $(id).addEventListener('input', () => {
+  edited.add(id); resetSettings(); $('confirm-access').checked = false;
+});
+async function detectAccess() {
+  const fallback = '자동으로 채우지 못했습니다. 아래 안내에 따라 Access 앱 정보를 입력하세요.';
+  try {
+    const response = await fetch('/setup/context', { cache: 'no-store', credentials: 'same-origin', redirect: 'error', signal: AbortSignal.timeout(5000) });
+    if (!response.ok) throw new Error();
+    const { hints } = await response.json();
+    if (currentStep !== 0) return;
+    let filled = 0;
+    for (const id of ['team', 'aud', 'admins']) {
+      if (typeof hints?.[id] === 'string' && !edited.has(id) && !$(id).value) {
+        $(id).value = hints[id]; filled++;
+      }
+    }
+    $('access-detection').textContent = filled
+      ? '로그인 요청에서 후보를 채웠습니다. 아직 검증·저장되지 않았으니 내용을 확인하세요.' : fallback;
+    if (filled) {
+      $('access-confirmation').hidden = false;
+      $('confirm-access').required = true;
+    }
+  } catch { $('access-detection').textContent = fallback; }
+}
+void detectAccess();
 $('access-form').addEventListener('submit', event => {
   event.preventDefault();
   try { accessSettings(); showStep(1); }

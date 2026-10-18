@@ -40,6 +40,12 @@ Ego Chromium에서 확인했습니다. 실제 iOS Safari/Android Chrome 또는 �
 
 `Update Keyport` 수동 Actions workflow와 기준 커밋 기반 3-way 병합을 추가했습니다. 별도 임시 Git 저장소 테스트 3개로 배포 설정 보존·원본 설정 병합·재실행·충돌/미커밋 변경 중단·이미 반영된 템플릿 처리를 검증했습니다. 전체 테스트는 15개입니다. 실제 배포 저장소에서 workflow 실행·PR 생성은 설치 PR 병합 후 별도 확인이 필요합니다.
 
+## Access 설정 후보 자동 입력
+
+현재 요청의 JWT에서 형식·만료를 점검한 팀 도메인·단일 AUD·이메일 후보만 반환합니다. 서명 검증이나 관리자 등록을 대신하지 않습니다. 테스트에서 후보 내용·no-store·CORS 없음·원문 비노출·외부 호출 없음·Secret 미변경·위조/만료/과대/잘못된 issuer·다중 AUD·설정 후 인증 차단을 확인했습니다. 전체 테스트 16개 통과.
+
+Ego Chromium과 로컬 Worker에 합성 요청 헤더를 사용해 자동 입력, 확인 전 진행 차단, 이전 단계에서 수정 시 재확인, 정보 없는 수동 입력 경로, 390px 가로 넘침 없음을 확인했습니다. 실제 Cloudflare 로그인 헤더 전달은 배포 후 확인이 필요합니다.
+
 ## 사용자 제공 첫 배포 로그
 
 2026-10-19 KST에 제공된 Cloudflare Workers Builds 로그에서 `ajchemist/keyport` → `alchemiakr/keyport` 복제, Bun 설치·Astro 빌드, 원격 D1 초기 마이그레이션, Worker·자산 배포 성공을 확인했습니다. 배포 주소는 `https://keyport.alchemiakr.workers.dev`입니다. 이 로그만으로 Access 정책이나 실제 wizard 완료를 검증한 것은 아닙니다.
