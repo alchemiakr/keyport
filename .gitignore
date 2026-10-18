@@ -1,0 +1,13 @@
+node_modules/
+.wrangler/
+.dev.vars
+.env
+.env.*
+!.env.types.example
+.keyport/
+backups/
+dist/
+*.tsbuildinfo
+.DS_Store
+
+.astro/

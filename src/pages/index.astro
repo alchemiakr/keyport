@@ -1,0 +1,44 @@
+---
+import "../styles/global.css";
+---
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#122b26"><meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Keyport">
+<link rel="manifest" href="/manifest.webmanifest"><link rel="icon" href="/icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/icon-192.png">
+<script type="module" src="/app.js"></script>
+<title>Keyport · Tailscale Auth Keys</title><meta name="description" content="Issue single-use Tailscale auth keys on your own Cloudflare account.">
+</head>
+<body>
+<header class="max-w-3xl mx-auto min-h-22 flex items-center justify-between gap-4 text-sm"><a class="flex items-center gap-2 text-lg font-semibold no-underline tracking-tight" href="/" aria-label="Keyport 홈"><img src="/icon.svg" alt="" width="36" height="36">keyport</a><a href="/cdn-cgi/access/logout">로그아웃</a></header>
+<main class="max-w-xl mx-auto">
+<div class="py-8"><p class="text-xs text-zinc-400 tracking-widest mb-3">TAILSCALE KEY DESK</p><h1 class="text-3xl font-semibold tracking-tight leading-snug mb-3">기기 등록 키</h1><p>계정과 네트워크를 선택해 일회용 키를 발급하세요.</p></div>
+<p id="identity" class="muted"></p>
+<div id="notice" role="status" aria-live="polite" tabindex="-1"></div>
+<p id="offline" hidden>오프라인입니다. 연결 등록·교체·발급은 온라인에서만 가능합니다.</p>
+<a id="reauth" hidden href="/">Access 다시 로그인</a>
+<section class="card" aria-labelledby="issue-title">
+<div class="section-head"><h2 id="issue-title">기기 등록 키 발급</h2><span class="badge">24시간 · 일회용</span></div>
+<form id="issue-form">
+<label for="profile-select">계정 프로필</label><select id="profile-select" required><option value="">계정을 선택하세요</option></select>
+<label for="connection-select">네트워크</label><select id="connection-select" required><option value="">네트워크를 선택하세요</option></select>
+<div id="connection-info" class="details">먼저 계정 프로필과 네트워크를 선택해 주세요.</div>
+<p class="muted">사전 승인 · 비임시 기기 · 태그 없음<br>Tailnet Lock 사용 시 별도 서명이 필요할 수 있습니다.</p>
+<button type="submit" id="issue-button">기기 등록 키 발급 <span aria-hidden="true">↗</span></button>
+</form>
+<section id="result" hidden aria-labelledby="result-title"><h3 id="result-title">키가 준비되었습니다</h3><p id="result-context"></p><label for="result-key">일회용 기기 등록 키</label><textarea id="result-key" readonly rows="3" spellcheck="false" autocapitalize="off"></textarea><p id="result-expiry"></p><div class="actions"><button id="copy" type="button">키 복사</button><button id="clear" class="secondary" type="button">지우기</button></div><p class="muted">비공개 경로로 직접 전달하세요. 이 화면을 떠나면 키를 다시 볼 수 없습니다.</p></section>
+</section>
+<section class="card" aria-labelledby="manage-title"><h2 id="manage-title">연결 관리</h2><p class="muted">모든 관리자가 모든 연결을 수정하고 키를 발급할 수 있습니다.</p>
+<details><summary>계정 프로필 추가</summary><form id="profile-form"><label for="profile-name">표시 이름</label><input id="profile-name" name="name" required maxlength="100" placeholder="예: 개인 계정"><label for="profile-owner">예상 소유자 · 관리자 입력, 미검증</label><input id="profile-owner" name="expected_owner" required maxlength="254" placeholder="이름 또는 이메일"><button type="submit">계정 프로필 추가</button></form></details>
+<details><summary>선택한 계정 프로필 수정·삭제</summary><form id="profile-edit"><label for="edit-profile-name">표시 이름</label><input id="edit-profile-name" name="name" required maxlength="100"><label for="edit-profile-owner">예상 소유자 · 관리자 입력, 미검증</label><input id="edit-profile-owner" name="expected_owner" required maxlength="254"><p class="muted">이름을 바꿔도 실제 Tailscale 소유자는 바뀌지 않습니다.</p><div class="actions"><button type="submit">프로필 저장</button><button id="delete-profile" type="button" class="danger">프로필 삭제</button></div></form></details>
+<details><summary>선택한 계정에 네트워크 추가</summary><form id="connection-form" autocomplete="off"><label for="network-name">네트워크 표시 이름</label><input id="network-name" name="name" required maxlength="100"><label for="tailnet">Tailnet 식별자</label><input id="tailnet" name="tailnet" required maxlength="253" autocapitalize="off" spellcheck="false" placeholder="example.com 또는 example.ts.net"><label for="token">사용자 API 토큰</label><input id="token" name="token" type="password" required maxlength="512" autocomplete="new-password" placeholder="tskey-api-…"><label for="token-expiry">토큰 만료 예정일 · 관리자 입력, 선택</label><input id="token-expiry" name="token_expires_on" type="date"><p class="muted">토큰으로 해당 Tailnet의 키 목록 접근을 검증합니다. 실제 소유자 신원과 발급 권한을 보증하지 않습니다. 저장한 토큰은 다시 표시하지 않습니다.</p><button type="submit">연결 검증 후 저장</button></form></details>
+<details><summary>선택한 네트워크 수정·토큰 교체</summary><form id="connection-edit" autocomplete="off"><label for="edit-network-name">표시 이름</label><input id="edit-network-name" name="name" required maxlength="100"><label for="replacement-token">새 API 토큰 · 교체할 때만 입력</label><input id="replacement-token" name="token" type="password" maxlength="512" autocomplete="new-password" placeholder="tskey-api-…"><label for="replacement-expiry">새 토큰 만료 예정일 · 관리자 입력, 선택</label><input id="replacement-expiry" name="token_expires_on" type="date"><div class="actions"><button type="submit">변경 저장</button><button id="verify" type="button" class="secondary">연결 검증</button><button id="delete-connection" type="button" class="danger">연결 삭제</button></div></form></details>
+<p class="muted">삭제는 로컬 자격 증명만 제거합니다. 기존 키·등록 기기는 남으며, 외부 API 토큰은 Tailscale에서 별도로 폐기해야 합니다.</p>
+</section>
+<section class="card"><details id="audit-details"><summary>최근 발급 기록</summary><p class="muted">최근 100건 · 90일 보관 · 비밀 원문 제외</p><ul id="audit"></ul></details></section>
+<section class="card"><details><summary>암호화 키 교체 · 운영 관리</summary><p class="muted">복구 파일과 DB를 백업하고, 기존 키를 PREVIOUS_ENCRYPTION_KEY에, 새 키를 TOKEN_ENCRYPTION_KEY에 저장한 뒤 실행하세요. 완료 후 이전 키를 삭제합니다.</p><button id="reencrypt" type="button" class="secondary">저장된 토큰 재암호화</button></details></section>
+<footer class="text-xs text-zinc-500 leading-loose text-center pt-4 pb-12">내 계정에서 운영하는 작은 키 데스크.<br>iOS Safari: 공유 → 홈 화면에 추가<br>Android Chrome: 메뉴 → 홈 화면에 추가 / 앱 설치</footer>
+</main>
+</body></html>

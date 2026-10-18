@@ -1,0 +1,47 @@
+{
+  "name": "keyport",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "dev": "bun run build && bunx wrangler dev",
+    "check": "bunx --bun tsc --noEmit",
+    "test": "bun test",
+    "deploy": "bunx wrangler d1 migrations apply DB --remote && bunx wrangler deploy --keep-vars",
+    "preview": "bunx wrangler preview",
+    "db:local": "bunx wrangler d1 migrations apply DB --local",
+    "types": "bunx wrangler types --env-file .env.types.example --strict-vars=false --include-runtime=false",
+    "build": "bunx --bun astro build"
+  },
+  "cloudflare": {
+    "bindings": {
+      "DB": {
+        "description": "Account profiles, encrypted connections, and 90-day audit records. The keyport build token needs Account D1 Edit permission to apply migrations."
+      }
+    }
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261018.1",
+    "@unocss/astro": "^66.11.0",
+    "typescript": "^7.0.2",
+    "unocss": "^66.11.0",
+    "wrangler": "^4.151.1",
+    "@types/bun": "^1.4.3"
+  },
+  "dependencies": {
+    "astro": "^7.4.0",
+    "jose": "^6.2.12"
+  },
+  "engines": {
+    "bun": ">=1.4.2",
+    "node": ">=24"
+  },
+  "description": "A self-hosted Tailscale auth key desk on Cloudflare.",
+  "homepage": "https://github.com/ajchemist/keyport",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ajchemist/keyport.git"
+  },
+  "packageManager": "bun@1.4.2"
+}
