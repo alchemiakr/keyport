@@ -70,7 +70,7 @@ Mutations require the correct Origin, JSON Content-Type, and a dedicated header.
 
 ## Updates and operations
 
-Use **Actions → Update Keyport → Run workflow** in your deployment repository to create a tested update PR, then review and merge it in GitHub. Cloudflare Builds deploys the production branch. See the [browser update procedure](docs/OPERATIONS.md#브라우저에서-업데이트하기) for one-time permissions and installation requirements. No local checkout or Cloudflare credentials in Actions are needed.
+Use **Actions → Update Keyport → Run workflow** in your deployment repository to create a tested update PR, then review and merge it in GitHub. Cloudflare Builds deploys the production branch. See the [browser update procedure](docs/OPERATIONS.md#브라우저에서-업데이트하기) for one-time permissions and installation requirements. No local checkout or Cloudflare credentials in Actions are needed. Updating workflow files may require the optional repository-scoped GitHub token described in the procedure.
 
 The [operations guide](docs/OPERATIONS.md) covers updates, rollback, token renewal, backup and recovery, encryption key rotation, and resource deletion. The [verification record](docs/VERIFICATION.md) distinguishes automated checks from outstanding live tests. Both documents currently use Korean. Domain terms live in [CONTEXT.md](CONTEXT.md); design decisions live in [ADRs](docs/adr/).
 

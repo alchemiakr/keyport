@@ -13,11 +13,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      GH_TOKEN: ${{ github.token }}
+      GH_TOKEN: ${{ secrets.KEYPORT_UPDATE_TOKEN || github.token }}
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
+          token: ${{ secrets.KEYPORT_UPDATE_TOKEN || github.token }}
       - name: Check for an existing update PR
         run: |
           existing=$(gh pr list --head update/keyport --state open --json url --jq '.[0].url // empty')

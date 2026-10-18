@@ -69,7 +69,7 @@ Access의 Worker 전체 보호를 설정하고, 서버도 JWT의 서명·issuer�
 
 ## 업데이트와 운영
 
-배포자 저장소의 **Actions → Update Keyport → Run workflow**로 검증된 업데이트 PR을 만들고 GitHub에서 검토·병합하세요. Cloudflare Builds가 운영 브랜치를 배포합니다. 최초 권한 설정·기존 설치 반영은 [브라우저 업데이트 절차](docs/OPERATIONS.md#브라우저에서-업데이트하기)를 따릅니다. 로컬 작업이나 Actions에 Cloudflare 자격 증명을 넣을 필요가 없습니다.
+배포자 저장소의 **Actions → Update Keyport → Run workflow**로 검증된 업데이트 PR을 만들고 GitHub에서 검토·병합하세요. Cloudflare Builds가 운영 브랜치를 배포합니다. 최초 권한 설정·기존 설치 반영은 [브라우저 업데이트 절차](docs/OPERATIONS.md#브라우저에서-업데이트하기)를 따릅니다. 로컬 작업이나 Actions에 Cloudflare 자격 증명을 넣을 필요가 없습니다. Workflow 파일 업데이트에는 절차에 설명한 선택적 GitHub 토큰이 필요할 수 있습니다.
 
 [운영 안내](docs/OPERATIONS.md)에 업데이트·롤백·토큰 갱신·백업/복구·암호화 키 교체·리소스 삭제 절차가 있습니다. [검증 기록](docs/VERIFICATION.md)은 자동 테스트와 실제 환경의 미검증 항목을 구분합니다. 도메인 용어는 [CONTEXT.md](CONTEXT.md), 결정 배경은 [ADR](docs/adr/)에 기록합니다.
 
