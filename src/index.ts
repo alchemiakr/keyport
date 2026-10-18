@@ -1,4 +1,4 @@
-import { authenticate, configured, decrypt, encrypt, mutation, Problem, readJson, required } from './security.ts';
+import { authenticate, configured, setupHints, decrypt, encrypt, mutation, Problem, readJson, required } from './security.ts';
 import { apiToken, issueKey, tailnetName, verifyConnection } from './tailscale.ts';
 
 type Connection = { id: string; profile_id: string; tailnet: string; name: string; token_cipher: string };
@@ -143,6 +143,9 @@ export default {
   async fetch(request: Request, env: Env) {
     try {
       const pathBeforeAuth = new URL(request.url).pathname;
+      if (!configured(env) && pathBeforeAuth === '/setup/context' && request.method === 'GET') {
+        return protect(json({ hints: setupHints(request) }));
+      }
       const setupAssets = new Set(['/setup.js', '/icon.svg']);
       if (!configured(env) && ['GET', 'HEAD'].includes(request.method)
         && (['/', '/setup', '/setup.html'].includes(pathBeforeAuth) || setupAssets.has(pathBeforeAuth) || /^\/_astro\/[A-Za-z0-9_.-]+\.css$/.test(pathBeforeAuth))) {

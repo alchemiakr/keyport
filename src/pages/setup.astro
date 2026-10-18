@@ -35,7 +35,7 @@ import "../styles/global.css";
 
       <section class="card" data-setup-step aria-labelledby="access-title">
         <h2 id="access-title" tabindex="-1">관리자 접근을 설정하세요</h2>
-        <p class="muted">배포할 때 생성된 Access 앱의 정보가 필요합니다.</p>
+        <p id="access-detection" class="muted" role="status">Access 로그인 정보를 확인하는 중입니다.</p>
         <form id="access-form">
           <label for="team">Zero Trust 팀 도메인</label>
           <input id="team" required placeholder="my-team.cloudflareaccess.com" autocomplete="off" spellcheck="false" aria-describedby="team-help" />
@@ -45,7 +45,7 @@ import "../styles/global.css";
           <p id="aud-help" class="setup-hint">Zero Trust → Access → Applications → 기존 Keyport 앱 → AUD</p>
           <label for="admins">허용할 관리자 이메일</label>
           <input id="admins" required type="text" placeholder="관리자 이메일" autocomplete="off" aria-describedby="admins-help" />
-          <p id="admins-help" class="setup-hint">Access 허용 정책과 동일하게 입력합니다. 여러 명이면 쉼표로 구분합니다.</p>
+          <p id="admins-help" class="setup-hint">Access에서 허용한 관리자만 입력하세요. 여러 명이면 쉼표로 구분합니다.</p>
           <details class="setup-help">
             <summary>앱 주소 확인·변경</summary>
             <label for="origin">사용할 앱 URL</label>
@@ -60,6 +60,7 @@ import "../styles/global.css";
               <li>관리자만 허용하세요. Everyone·Bypass는 사용하지 않습니다. 기존 앱을 중복 생성하지 마세요.</li>
             </ol>
           </details>
+          <label id="access-confirmation" class="setup-check" hidden><input id="confirm-access" type="checkbox" />위 값을 이 앱의 Access 설정과 관리자 이메일로 사용하겠습니다.</label>
           <button type="submit">다음 · 복구 키 만들기</button>
         </form>
       </section>

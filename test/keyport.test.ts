@@ -73,6 +73,31 @@ test('초기 설정 전에는 안내 자산만 공개하고 API·앱 자산·발
   for (const [path, method] of [['/app.js', 'GET'], ['/api/profiles', 'GET'], ['/api/connections/not-real/issue', 'POST']]) assert.equal((await request(path, method)).status, 503);
   assert.equal(upstream.length, 0);
 });
+test('설정 후보는 현재 요청에서만 읽고 인증·설정 저장에 사용하지 않는다', async () => {
+  env.TOKEN_ENCRYPTION_KEY = '';
+  const response = await request('/setup/context');
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { hints: { team: 'keyport-test.cloudflareaccess.com', aud, admins: 'admin@example.com' } });
+  assert.match(response.headers.get('Cache-Control')!, /no-store/);
+  assert.equal(response.headers.get('Access-Control-Allow-Origin'), null);
+  const forged = (claims: Record<string, unknown>) => `${btoa('{}')}.${btoa(JSON.stringify(claims))}.fake`;
+  const claims = { iss: issuer, aud: [aud], email: 'OTHER@example.com', exp: Math.floor(Date.now() / 1000) + 60, ignored: 'private-claim' };
+  const hints = await (await request('/setup/context', 'GET', undefined, { jwt: forged(claims) })).text();
+  assert.deepEqual(JSON.parse(hints), { hints: { team: 'keyport-test.cloudflareaccess.com', aud, admins: 'other@example.com' } });
+  assert.doesNotMatch(hints, /private-claim|fake|signature|token/);
+  assert.equal(env.ADMIN_EMAILS, 'admin@example.com');
+  assert.equal(env.TOKEN_ENCRYPTION_KEY, '');
+  assert.equal((await request('/api/session', 'GET', undefined, { jwt: forged(claims) })).status, 503);
+  for (const value of ['', 'broken', 'x'.repeat(8193), expired, forged({ ...claims, iss: 'https://evil.example.com' }), forged({ ...claims, iss: `${issuer}/extra` })]) {
+    assert.deepEqual(await (await request('/setup/context', 'GET', undefined, { jwt: value })).json(), { hints: {} });
+  }
+  const ambiguous = await request('/setup/context', 'GET', undefined, { jwt: forged({ ...claims, aud: [aud, 'b'.repeat(64)], email: 'bad,email' }) });
+  assert.deepEqual(await ambiguous.json(), { hints: { team: 'keyport-test.cloudflareaccess.com' } });
+  assert.equal((await request('/setup/context', 'POST')).status, 503);
+  env.TOKEN_ENCRYPTION_KEY = secret;
+  assert.equal((await request('/setup/context', 'GET', undefined, { jwt: forged(claims) })).status, 403);
+  assert.equal(upstream.length, 0);
+});
 test('가짜 신원·서명·만료·다른 AUD/issuer·비허용 관리자·대체 도메인을 거부한다', async () => {
   for (const value of ['', 'forged.jwt.signature', stranger, expired, wrongAud, wrongIssuer]) {
     const r = await request('/api/connections', 'GET', undefined, { jwt: value, headers: { 'Cf-Access-Authenticated-User-Email': 'admin@example.com' } });

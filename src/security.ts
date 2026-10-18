@@ -1,4 +1,4 @@
-import { createRemoteJWKSet, jwtVerify } from 'jose';
+import { createRemoteJWKSet, decodeJwt, jwtVerify } from 'jose';
 
 export class Problem extends Error {
   status: number;
@@ -33,6 +33,22 @@ export async function readJson(message: Request | Response, max = 16384): Promis
     if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error();
     return value as Record<string, unknown>;
   } catch { throw new Problem(400, 'invalid_json', '올바른 JSON 응답 또는 요청이 필요합니다.'); }
+}
+// These request claims are unverified hints, never authentication or persisted configuration.
+export function setupHints(request: Request): Record<string, string> {
+  const token = request.headers.get('Cf-Access-Jwt-Assertion');
+  if (!token || token.length > 8192) return {};
+  try {
+    const claims = decodeJwt(token);
+    if (typeof claims.iss !== 'string' || !/^https:\/\/[a-z0-9-]+\.cloudflareaccess\.com$/.test(claims.iss)
+      || typeof claims.exp !== 'number' || claims.exp <= Date.now() / 1000) return {};
+    const hints: Record<string, string> = { team: claims.iss.slice('https://'.length) };
+    const audience = Array.isArray(claims.aud) && claims.aud.length === 1 ? claims.aud[0] : claims.aud;
+    if (typeof audience === 'string' && /^[a-f0-9]{64}$/.test(audience)) hints.aud = audience;
+    if (typeof claims.email === 'string' && claims.email.length <= 254
+      && /^[^\s@,]+@[^\s@,]+\.[^\s@,]+$/.test(claims.email)) hints.admins = claims.email.toLowerCase();
+    return hints;
+  } catch { return {}; }
 }
 export function configured(env: Env): boolean {
   try {
