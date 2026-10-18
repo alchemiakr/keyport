@@ -71,8 +71,9 @@ import "../styles/global.css";
         <p class="setup-warning"><strong>기존 연결 데이터가 있나요?</strong><br />새 키를 만들지 말고 기존 Worker Secret이나 복구 파일의 키를 복원하세요.</p>
         <label class="setup-check"><input id="new-install" type="checkbox" />기존 연결 데이터가 없는 새 설치입니다.</label>
         <button id="generate" type="button">암호화 키 생성</button>
+        <button id="copy-key" class="secondary" type="button" disabled>복구 키 복사</button>
         <button id="backup" class="secondary" type="button" disabled>복구 파일 다운로드</button>
-        <p class="setup-hint">파일에는 비밀 키가 들어 있습니다. 암호화된 보관함에 보관하세요. 키를 잃으면 저장한 토큰을 복구할 수 없습니다.</p>
+        <p class="setup-hint">복사한 키나 복구 파일을 암호화된 보관함에 보관하세요. 클립보드는 임시 저장이며 다른 기기와 동기화될 수 있습니다. 키를 잃으면 저장한 토큰을 복구할 수 없습니다.</p>
         <div class="actions mt-6">
           <button type="button" class="secondary" data-setup-back>이전</button>
           <button id="prepare" type="button">다음 · Secret 저장</button>
@@ -82,12 +83,12 @@ import "../styles/global.css";
       <section class="card" data-setup-step aria-labelledby="secrets-title" hidden>
         <h2 id="secrets-title" tabindex="-1">다섯 값을 Secret으로 저장하세요</h2>
         <p class="muted">Worker → Settings → Variables and Secrets → Add</p>
-        <p class="text-sm">유형을 <strong>Secret</strong>으로 선택하고 아래 이름과 값을 넣으세요.</p>
+        <p class="text-sm">Cloudflare에서 유형을 <strong>Secret</strong>으로 선택하고 아래 이름과 값을 직접 넣으세요. 이 화면에서는 자동 저장하지 않습니다.</p>
         <div id="settings"></div>
         <div class="border-t border-zinc-200 pt-5 mt-6">
           <p class="text-sm mb-3">다섯 값을 저장한 뒤 Cloudflare에서 <strong>Deploy</strong>를 누르세요.</p>
-          <a id="open-app" class="setup-primary" href="/">저장 후 앱 열기 →</a>
-          <p class="setup-hint">앱이 열리면 계정 프로필과 Tailscale 연결을 추가할 수 있습니다.</p>
+          <a id="open-app" class="setup-primary" href="/">설정한 앱으로 이동 →</a>
+          <p class="setup-hint">이 버튼은 이동만 합니다. Cloudflare에서 저장·Deploy를 마친 뒤 누르세요.</p>
         </div>
         <details class="setup-help">
           <summary>저장했는데 이 화면이 다시 나오나요?</summary>

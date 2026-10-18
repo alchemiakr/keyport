@@ -38,7 +38,11 @@ Ego Chromium에서 확인했습니다. 실제 iOS Safari/Android Chrome 또는 �
 
 ## 업데이트 자동화
 
-`Update Keyport` 수동 Actions workflow와 기준 커밋 기반 3-way 병합을 추가했습니다. 별도 임시 Git 저장소 테스트 3개로 배포 설정 보존·원본 설정 병합·재실행·충돌/미커밋 변경 중단·이미 반영된 템플릿 처리를 검증했습니다. 전체 테스트는 15개입니다. 실제 배포 저장소에서 workflow 실행·PR 생성은 설치 PR 병합 후 별도 확인이 필요합니다.
+`Update Keyport` 수동 Actions workflow와 기준 커밋 기반 3-way 병합을 추가했습니다. 별도 임시 Git 저장소 테스트 3개로 배포 설정 보존·원본 설정 병합·재실행·충돌/미커밋 변경 중단·이미 반영된 템플릿 처리를 검증했습니다. 전체 테스트는 15개입니다. 설치 PR 병합 후 `alchemiakr/keyport`에서 Update Keyport 실행·검증·PR #2 자동 생성까지 성공했습니다.
+
+## 복구 키 복사
+
+Ego Chromium·로컬 Worker에서 클립보드 API 성공/실패를 대체해 검증했습니다. 다운로드 없이 복사 성공만으로 다섯 Secret 준비, 복사한 키와 TOKEN_ENCRYPTION_KEY 일치, 복사 실패 시 진행 차단, 키 재생성 후 이전 복사 상태 무효화, 앱 이동 버튼의 수동 저장 안내를 확인했습니다. 실제 OS 클립보드 권한·동기화 동작은 별도 확인이 필요합니다.
 
 ## Access 설정 후보 자동 입력
 

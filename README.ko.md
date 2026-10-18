@@ -34,8 +34,8 @@ Access 로그인 정보가 있으면 팀 도메인·단일 AUD·이메일 후보
 
 1. Worker URL을 열고 Access 로그인 후 **설정 wizard**로 들어갑니다. 별도 CLI 설치는 필요 없습니다.
 2. Worker 전체 Access 보호와 기존 Access 앱의 실제 관리자 이메일 허용 정책을 확인합니다. 앱을 중복 생성하지 말고 기존 AUD 태그를 사용합니다.
-3. 브라우저에서 암호화 키를 생성하고 복구 파일을 안전하게 보관합니다.
-4. wizard가 준비한 다섯 값을 Worker **Settings → Variables and Secrets**에 **Secret**으로 저장한 뒤 해당 설정을 Deploy합니다.
+3. 브라우저에서 암호화 키를 생성하고 복사 또는 복구 파일 다운로드를 선택합니다. 암호화된 보관함에 보관하며 클립보드만 백업으로 사용하지 않습니다.
+4. wizard가 준비한 다섯 값을 Worker **Settings → Variables and Secrets**에 **Secret**으로 저장한 뒤 해당 설정을 Deploy합니다. 앱 이동 버튼은 Secret을 저장하지 않습니다.
 5. 앱에서 계정 프로필을 만들고 Tailnet과 해당 사용자의 **Tailscale API 토큰**을 등록합니다. Tailscale 토큰은 D1에 암호화하여 저장하며 다시 보여주지 않습니다.
 
 D1은 자동 생성·바인딩되므로 DB ID를 복사하지 않습니다. 버튼이 저장소 복제·Workers Builds 연결·리소스 생성·배포를 자동화하며, Access 정책·화면 선택값·필요한 토큰 권한·앱 Secret 설정은 명시적인 설치 단계로 남습니다. 실제 빈 Cloudflare 계정에서의 종단 검증은 아직 하지 않았습니다. [배포 버튼 공식 안내](https://developers.cloudflare.com/workers/platform/deploy-buttons/)

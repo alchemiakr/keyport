@@ -66,10 +66,20 @@ for (const button of document.querySelectorAll('[data-setup-back]')) {
 }
 $('generate').addEventListener('click', () => {
   if (!$('new-install').checked) return status('기존 연결 데이터가 없는 새 설치임을 확인해 주세요.');
-  if (key && !confirm('새 키를 다시 만들까요? 이전 복구 파일과 다른 키가 됩니다.')) return;
+  if (key && !confirm('새 키를 다시 만들까요? 이전에 보관한 키와 다른 키가 됩니다.')) return;
   key = btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(32))));
-  backedUp = false; resetSettings(); $('backup').disabled = false;
-  status('키를 생성했습니다. 복구 파일을 다운로드하세요.');
+  backedUp = false; resetSettings(); $('backup').disabled = false; $('copy-key').disabled = false;
+  status('키를 생성했습니다. 복사하거나 복구 파일을 다운로드하세요.');
+});
+$('copy-key').addEventListener('click', async () => {
+  if (!key) return;
+  const copiedKey = key;
+  try {
+    await navigator.clipboard.writeText(copiedKey);
+    if (key !== copiedKey) return status('키가 변경되었습니다. 현재 키를 다시 복사하세요.');
+    backedUp = true;
+    status('복구 키를 복사했습니다. 암호화된 보관함에 붙여 넣으세요. 클립보드만으로는 백업되지 않습니다.');
+  } catch { status('복사하지 못했습니다. 클립보드 권한을 확인하거나 복구 파일을 다운로드하세요.'); }
 });
 $('backup').addEventListener('click', () => {
   if (!key) return;
@@ -82,7 +92,7 @@ $('backup').addEventListener('click', () => {
 $('prepare').addEventListener('click', () => {
   try {
     const settings = { ...accessSettings(), TOKEN_ENCRYPTION_KEY: key };
-    if (!key || !backedUp) throw new Error('키를 생성하고 복구 파일을 먼저 다운로드하세요.');
+    if (!key || !backedUp) throw new Error('키를 생성하고 복사 또는 복구 파일 다운로드를 먼저 진행하세요.');
     $('settings').replaceChildren(...Object.entries(settings).map(([name, value]) => {
       const div = document.createElement('div'), label = document.createElement('label'), row = document.createElement('div'), input = document.createElement('input'), button = document.createElement('button');
       label.htmlFor = `setting-${name}`; label.textContent = name;
