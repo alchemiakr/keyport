@@ -1,0 +1,74 @@
+name: Update Keyport
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+  pull-requests: write
+concurrency:
+  group: update-keyport
+  cancel-in-progress: false
+jobs:
+  update:
+    if: github.repository != 'ajchemist/keyport' && github.ref_name == github.event.repository.default_branch
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Check for an existing update PR
+        run: |
+          existing=$(gh pr list --head update/keyport --state open --json url --jq '.[0].url // empty')
+          if [ -n "$existing" ]; then
+            echo "Merge or close the existing update PR first: $existing" >&2
+            exit 1
+          fi
+      - name: Prepare upstream update
+        id: update
+        run: |
+          git fetch https://github.com/ajchemist/keyport.git main
+          target=$(git rev-parse FETCH_HEAD)
+          git switch -c update/keyport
+          bash scripts/update-keyport.sh "$target"
+          if git diff --cached --quiet; then
+            echo 'Already up to date.' >> "$GITHUB_STEP_SUMMARY"
+            echo 'changed=false' >> "$GITHUB_OUTPUT"
+          else
+            echo 'changed=true' >> "$GITHUB_OUTPUT"
+            echo "target=$target" >> "$GITHUB_OUTPUT"
+          fi
+      # shortcut: Wrangler needs Node until Bun's request dispatcher compatibility is fixed.
+      - uses: actions/setup-node@v7
+        if: steps.update.outputs.changed == 'true'
+        with:
+          node-version-file: .node-version
+      - uses: oven-sh/setup-bun@v2
+        if: steps.update.outputs.changed == 'true'
+      - name: Validate update
+        if: steps.update.outputs.changed == 'true'
+        run: |
+          bun install --frozen-lockfile
+          bun run check
+          bun test
+          bun run build
+          git diff --cached --check
+      - name: Open update PR
+        if: steps.update.outputs.changed == 'true'
+        env:
+          TARGET: ${{ steps.update.outputs.target }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m "Update Keyport to $TARGET"
+          git push --force-with-lease origin HEAD:refs/heads/update/keyport
+          cat > "$RUNNER_TEMP/update-body.md" <<EOF_BODY
+          Updates Keyport from https://github.com/ajchemist/keyport/commit/$TARGET.
+
+          Type checking, tests, and build passed in the Update Keyport run. Review deployment-specific settings and migrations before merging. Back up D1 and the recovery key when database changes are included.
+
+          Merge this PR in GitHub to trigger your existing Cloudflare production build. This workflow does not deploy or access Cloudflare credentials. If GitHub requests approval for PR checks, select **Approve workflows to run**.
+          EOF_BODY
+          gh pr create --head update/keyport --base "$DEFAULT_BRANCH" --title 'Update Keyport' --body-file "$RUNNER_TEMP/update-body.md" >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,33 @@
+name: Checks
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      # shortcut: Wrangler needs Node until Bun's request dispatcher compatibility is fixed.
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun run types
+      - run: git diff --exit-code worker-configuration.d.ts
+      - run: bun run check
+      - run: bun test
+      - run: bun run build
+      - run: bun run db:local
+      - run: bun run db:local
+      - run: bunx wrangler deploy --dry-run --outdir .wrangler/dry-run
+      - run: bun run preview --help
+      - name: Check local dev server
+        run: |
+          bunx wrangler dev --ip 127.0.0.1 --port 8787 > /tmp/keyport-dev.log 2>&1 &
+          task_dev_pid=$!
+          trap 'kill "$task_dev_pid"' EXIT
+          curl --fail --silent --show-error --retry 20 --retry-all-errors --retry-delay 1 --retry-max-time 45 --max-time 2 http://127.0.0.1:8787/ --output /dev/null
+          test "$(curl --silent --max-time 5 --output /dev/null --write-out '%{http_code}' http://127.0.0.1:8787/api/connections)" = 503

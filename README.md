@@ -29,6 +29,8 @@ Cloudflare controls these dashboard fields. Repository scripts do not overwrite 
 
 Once deployment succeeds:
 
+The wizard shows three steps: **Access settings → Recovery key → Save Secrets**. Expand the help sections when you need to repair Access policies or build settings.
+
 1. Open the Worker URL and sign in through Access to launch the **setup wizard**. No local CLI is needed.
 2. Confirm Worker-wide Access protection and restrict the existing Access application to the actual administrator emails. Reuse its AUD tag instead of creating a duplicate application.
 3. Generate an encryption key in your browser and secure the recovery file.
@@ -67,6 +69,8 @@ Configure Worker-wide Access protection. The server additionally verifies JWT si
 Mutations require the correct Origin, JSON Content-Type, and a dedicated header. Cross-origin CORS is disabled. Atomic D1 updates enforce a five-second issuance interval per administrator and 30 seconds per connection. Every response uses `no-store`, including CDN cache controls. There is no offline issuance, secret request queue, or restoration of old keys after restart.
 
 ## Updates and operations
+
+Use **Actions → Update Keyport → Run workflow** in your deployment repository to create a tested update PR, then review and merge it in GitHub. Cloudflare Builds deploys the production branch. See the [browser update procedure](docs/OPERATIONS.md#브라우저에서-업데이트하기) for one-time permissions and installation requirements. No local checkout or Cloudflare credentials in Actions are needed.
 
 The [operations guide](docs/OPERATIONS.md) covers updates, rollback, token renewal, backup and recovery, encryption key rotation, and resource deletion. The [verification record](docs/VERIFICATION.md) distinguishes automated checks from outstanding live tests. Both documents currently use Korean. Domain terms live in [CONTEXT.md](CONTEXT.md); design decisions live in [ADRs](docs/adr/).
 

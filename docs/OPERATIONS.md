@@ -23,6 +23,20 @@ Cloudflare 관리 API 토큰은 런타임에 저장하지 않습니다. GitHub/C
 
 ## 배포와 업데이트
 
+### 브라우저에서 업데이트하기
+
+1. 배포자 저장소의 **Settings → Actions → General → Workflow permissions**에서 **Allow GitHub Actions to create and approve pull requests**를 켭니다. Workflow는 PR만 만들며 승인·자동 병합하지 않습니다. 조직 정책으로 제한되어 있으면 관리자가 허용해야 합니다. 별도 PAT나 Cloudflare Secret은 필요하지 않습니다.
+2. **Actions → Update Keyport → Run workflow**에서 기본 브랜치를 선택해 실행합니다. 원본 `ajchemist/keyport`에서는 실행하지 않습니다.
+3. workflow가 만든 **Update Keyport** PR에서 변경사항·D1 마이그레이션·배포별 설정을 확인합니다. 타입 검사·테스트·빌드는 PR 생성 전에 실행합니다. GitHub가 PR 검사 승인을 요청하면 **Approve workflows to run**을 누릅니다.
+4. DB 변경이 있으면 D1과 복구 키를 백업하고, PR을 GitHub에서 직접 병합합니다. 연결된 운영 브랜치의 Cloudflare Workers Builds 자동 배포 성공과 커밋을 확인합니다.
+5. Access 보호, 기존 연결, 앱 동작을 확인합니다. 설정을 다시 하거나 암호화 키를 새로 생성하지 않습니다.
+
+원본 변경은 `.keyport-upstream`에 기록된 커밋 이후부터 3-way 병합합니다. 배포별 Worker·D1 설정도 병합 대상이며 충돌 시 덮어쓰지 않고 중단합니다. `.keyport-upstream`을 임의로 수정하지 마세요. 열린 업데이트 PR이 있으면 먼저 병합하거나 닫습니다. 변경이 없으면 PR을 만들지 않습니다. 충돌이 나거나 원본 이력이 달라졌다면 수동 검토가 필요하며 운영 브랜치는 유지됩니다. 실패 상세는 Actions 로그에서 확인합니다.
+
+Cloudflare 배포 버튼이 workflow 파일을 제외한 복제 저장소를 만들 수 있으므로, 기존 설치에는 updater·스크립트·기준 커밋을 별도 설치 PR로 먼저 반영해야 합니다. workflow는 기본 브랜치에 있어야 Actions에서 실행할 수 있습니다. 원본 저장소는 빌드·배포 설정이나 비밀을 자동 덮어쓰지 않습니다.
+
+### 배포 시 확인사항
+
 1. 배포자 복제 저장소의 `wrangler.jsonc`에 자동 생성된 D1 ID와 실제 Worker 이름을 유지합니다. 원본의 ID 없는 템플릿으로 덮어쓰거나 리소스 이름을 임의로 바꾸지 마세요.
 2. D1과 복구 키를 백업합니다. 변경을 연결된 운영 브랜치에 반영합니다.
 3. Workers Builds의 `bun run build`와 `bun run deploy`를 확인합니다. Bun 1.4.2 이상을 사용합니다.

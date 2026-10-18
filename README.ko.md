@@ -27,7 +27,8 @@
 
 **이 `keyport` API 토큰은 Cloudflare Builds 배포용이며 Tailscale 토큰이 아닙니다.** Cloudflare가 생성·관리하도록 두고 Git·앱·D1·Worker Secret에 복사하지 마세요. 배포 스크립트가 D1 마이그레이션을 실행하므로 대상 계정의 **Account → D1 → Edit** 권한을 확인합니다. 공식 문서의 일반적인 자동 생성 토큰 권한 목록에는 D1이 없으므로 새 토큰에 포함되었다고 가정하지 않습니다. 마이그레이션에서 인증 오류가 나면 **My Profile → API Tokens**의 생성된 `keyport` 토큰에 대상 계정의 D1 편집 권한을 추가하고 빌드를 재시도하세요. Global API Key로 대체하지 않습니다. [빌드 토큰 공식 문서](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/)
 
-배포가 성공하면:
+배포가 성공하면 wizard는 **접근 설정 → 복구 키 → Secret 저장**의 세 단계만 보여줍니다. Access 누락·정책 수정과 빌드 설정 복구 안내는 필요한 때 펼쳐 볼 수 있습니다.
+
 
 1. Worker URL을 열고 Access 로그인 후 **설정 wizard**로 들어갑니다. 별도 CLI 설치는 필요 없습니다.
 2. Worker 전체 Access 보호와 기존 Access 앱의 실제 관리자 이메일 허용 정책을 확인합니다. 앱을 중복 생성하지 말고 기존 AUD 태그를 사용합니다.
@@ -67,6 +68,8 @@ Access의 Worker 전체 보호를 설정하고, 서버도 JWT의 서명·issuer�
 변경 요청은 Origin·JSON Content-Type·전용 헤더를 검사하며 외부 CORS는 열지 않습니다. D1 원자적 갱신으로 관리자별 발급 간격 5초, 연결별 30초를 적용합니다. 모든 응답은 `no-store`이며 CDN 캐시도 금지합니다. 오프라인 발급·비밀 요청 큐·재실행 시 과거 키 복원은 없습니다.
 
 ## 업데이트와 운영
+
+배포자 저장소의 **Actions → Update Keyport → Run workflow**로 검증된 업데이트 PR을 만들고 GitHub에서 검토·병합하세요. Cloudflare Builds가 운영 브랜치를 배포합니다. 최초 권한 설정·기존 설치 반영은 [브라우저 업데이트 절차](docs/OPERATIONS.md#브라우저에서-업데이트하기)를 따릅니다. 로컬 작업이나 Actions에 Cloudflare 자격 증명을 넣을 필요가 없습니다.
 
 [운영 안내](docs/OPERATIONS.md)에 업데이트·롤백·토큰 갱신·백업/복구·암호화 키 교체·리소스 삭제 절차가 있습니다. [검증 기록](docs/VERIFICATION.md)은 자동 테스트와 실제 환경의 미검증 항목을 구분합니다. 도메인 용어는 [CONTEXT.md](CONTEXT.md), 결정 배경은 [ADR](docs/adr/)에 기록합니다.
 
