@@ -17,3 +17,9 @@
 .setup-primary{display:block;background:#18181b;color:#fff;border-radius:7px;padding:12px;text-align:center;text-decoration:none;font-size:.9rem;font-weight:550}
 .setup-build-settings{display:grid;grid-template-columns:70px minmax(0,1fr);gap:8px;font-size:.8rem}
 .setup-build-settings dd{margin:0;overflow-wrap:anywhere}
+
+.app-nav{display:flex;gap:24px;border-bottom:1px solid #e4e4e7}
+.app-nav a{padding:12px 0;text-decoration:none;font-size:.9rem;color:#71717a}
+.app-nav a[aria-current=page]{border-bottom:2px solid #18181b;color:#18181b;font-weight:600}
+.form-feedback:empty{display:none}
+.form-feedback{font-size:.85rem;padding:12px;background:#f4f4f5;margin:14px 0 0;white-space:pre-line}
