@@ -12,7 +12,7 @@ const issuer = 'https://keyport-test.cloudflareaccess.com';
 const secret = btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(32))));
 const nativeFetch = globalThis.fetch;
 let sqlite: Database, env: Env, jwt: string, stranger: string, expired: string, wrongAud: string, wrongIssuer: string;
-let upstream: { url: string; authorization: string; body?: unknown }[] = [];
+let upstream: { url: string; authorization: string; body?: unknown; redirect?: RequestInit['redirect'] }[] = [];
 let upstreamStatus = 200, upstreamMode = 'normal';
 const pair = await generateKeyPair('RS256');
 const publicJwk = { ...await exportJWK(pair.publicKey), kid: 'test-key', alg: 'RS256', use: 'sig' };
@@ -52,7 +52,8 @@ beforeAll(async () => {
     const url = String(input);
     if (url === `${issuer}/cdn-cgi/access/certs`) return Response.json({ keys: [publicJwk] });
     assert.match(url, /^https:\/\/api\.tailscale\.com\/api\/v2\/tailnet\//);
-    upstream.push({ url, authorization: new Request(url, init).headers.get('Authorization') ?? '', ...(init?.body ? { body: JSON.parse(String(init.body)) } : {}) });
+    if (init?.redirect === 'error') throw new TypeError('Invalid redirect value: Workers supports follow or manual');
+    upstream.push({ url, redirect: init?.redirect, authorization: new Request(url, init).headers.get('Authorization') ?? '', ...(init?.body ? { body: JSON.parse(String(init.body)) } : {}) });
     if (upstreamMode === 'timeout') throw new DOMException('timeout', 'TimeoutError');
     if (upstreamStatus !== 200) return Response.json({ message: 'SENSITIVE UPSTREAM CONTENT' }, { status: upstreamStatus });
     if (upstreamMode === 'empty') return Response.json({});
@@ -112,6 +113,29 @@ test('CSRF·GET 발급·임의 Tailnet URL을 차단한다', async () => {
   const r = await request('/api/connections', 'POST', { profile_id: p, name: 'x', tailnet: 'https://evil.example', token: 'tskey-api-test' }); assert.equal(r.status, 400);
   assert.equal((await request('/api/connections/00000000-0000-0000-0000-000000000000/issue')).status, 404);
   assert.equal(upstream.length, 0);
+});
+test('Workers Fetch에서 검증·발급이 동작하고 리다이렉트에 토큰을 전달하지 않는다', async () => {
+  const p = await addProfile(), c = await addConnection(p);
+  assert.equal(upstream.at(-1)?.redirect, 'manual');
+  resetRate();
+  const issued = await request(`/api/connections/${c}/issue`, 'POST');
+  assert.equal(issued.status, 200, await issued.clone().text());
+  assert.equal(upstream.at(-1)?.redirect, 'manual');
+  for (const status of [301, 302, 303, 307, 308]) {
+    upstreamStatus = status;
+    resetRate();
+    const count = upstream.length;
+    const checked = await request(`/api/connections/${c}/verify`, 'POST');
+    assert.equal(checked.status, 502);
+    assert.equal((await checked.json() as {error: string}).error, 'upstream_redirect');
+    assert.equal(upstream.length, count + 1);
+    resetRate();
+    const issueCount = upstream.length;
+    const redirected = await request(`/api/connections/${c}/issue`, 'POST');
+    assert.equal(redirected.status, 502);
+    assert.equal((await redirected.json() as {error: string}).error, 'issuance_unknown');
+    assert.equal(upstream.length, issueCount + 1);
+  }
 });
 test('두 계정·두 Tailnet·같은 Tailnet의 다른 사용자 토큰이 분리되고 비밀이 반환되지 않는다', async () => {
   const p1 = await addProfile('개인'), p2 = await addProfile('업무');

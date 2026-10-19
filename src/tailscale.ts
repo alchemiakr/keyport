@@ -16,13 +16,17 @@ export const keyContract = {
 };
 async function call(tailnet: string, token: string, create: boolean): Promise<Record<string, unknown>> {
   try {
+    // Workers rejects redirect: 'error'; inspect 3xx responses without forwarding credentials.
     const response = await fetch(`https://api.tailscale.com/api/v2/tailnet/${encodeURIComponent(tailnet)}/keys`, {
-      method: create ? 'POST' : 'GET', redirect: 'error', signal: AbortSignal.timeout(12000),
+      method: create ? 'POST' : 'GET', redirect: 'manual', signal: AbortSignal.timeout(12000),
       headers: { Authorization: `Basic ${btoa(`${token}:`)}`, 'Content-Type': 'application/json', Accept: 'application/json' },
       ...(create ? { body: JSON.stringify(keyContract) } : {}),
     });
     if (!response.ok) {
       await response.body?.cancel();
+      if (response.status >= 300 && response.status < 400) throw new Problem(502, create ? 'issuance_unknown' : 'upstream_redirect', create
+        ? '리다이렉트 응답을 받아 발급 여부를 확인할 수 없습니다. Tailscale 콘솔을 확인해 주세요. 자동 재시도하지 않습니다.'
+        : 'Tailscale이 다른 주소로 이동을 요청해 검증을 중단했습니다. 토큰은 전달하지 않았습니다.');
       if (response.status === 401) throw new Problem(422, 'token_expired', '토큰이 만료되었거나 유효하지 않습니다. 토큰을 교체해 주세요.');
       if (response.status === 403 || response.status === 404) throw new Problem(422, 'tailnet_denied', '대상 Tailnet 또는 필요한 권한을 확인해 주세요.');
       if (response.status === 429) throw new Problem(429, 'upstream_rate_limit', 'Tailscale 요청 제한입니다. 잠시 후 직접 다시 시도해 주세요.');
