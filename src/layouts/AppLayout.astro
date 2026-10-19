@@ -8,12 +8,25 @@ const { manage = false } = Astro.props;
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#122b26"><meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Keyport">
-<link rel="manifest" href="/manifest.webmanifest"><link rel="icon" href="/icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials"><link rel="icon" href="/icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/icon-192.png">
+<script type="module" src="/pwa.js"></script>
 <script type="module" src="/app.js"></script>
 <title>{manage ? "Keyport · Connections" : "Keyport · Tailscale Auth Keys"}</title><meta name="description" content="Issue single-use Tailscale auth keys on your own Cloudflare account.">
 </head>
 <body>
-<header class="max-w-3xl mx-auto min-h-22 flex items-center justify-between gap-4 text-sm"><a class="flex items-center gap-2 text-lg font-semibold no-underline tracking-tight" href="/" aria-label="Keyport 홈"><img src="/icon.svg" alt="" width="36" height="36">keyport</a><a href="/cdn-cgi/access/logout">로그아웃</a></header>
+<header class="max-w-3xl mx-auto min-h-22 flex items-center justify-between gap-4 text-sm"><a class="flex items-center gap-2 text-lg font-semibold no-underline tracking-tight" href="/" aria-label="Keyport 홈"><img src="/icon.svg" alt="" width="36" height="36">keyport</a><div class="flex items-center gap-4"><button id="install-open" type="button" class="install-button">앱 설치</button><a href="/cdn-cgi/access/logout">로그아웃</a></div></header>
+<dialog id="install-dialog" aria-labelledby="install-title">
+<div class="flex items-center gap-3 mb-4"><img src="/icon.svg" alt="" width="40" height="40"><h2 id="install-title" class="mb-0">Keyport 앱 설치</h2></div>
+<p>홈 화면에서 바로 열고, 별도 앱 창에서 키를 발급·복사하세요.</p>
+<ol id="install-ios" hidden>
+<li>이 주소를 iPhone·iPad의 <strong>Safari</strong>에서 여세요.</li>
+<li><strong>더 보기(···) → 공유</strong>를 누르세요. 공유 버튼이 바로 보이면 그 버튼을 누르세요.</li>
+<li><strong>홈 화면에 추가</strong>를 선택하고, 표시되는 경우 <strong>웹 앱으로 열기</strong>를 켠 뒤 <strong>추가</strong>를 누르세요.</li>
+</ol>
+<p id="install-other">브라우저 메뉴에서 <strong>앱 설치</strong> 또는 <strong>홈 화면에 추가</strong>를 선택하세요. 지원되는 Chrome·Edge에서는 이 버튼으로 설치 창을 열 수 있습니다.</p>
+<p class="muted">설치 후에도 Access 로그인이 필요합니다. 등록·교체·발급은 온라인에서만 가능합니다. 도메인을 바꾸면 새 주소에서 다시 설치하세요.</p>
+<button id="install-close" type="button" class="secondary">닫기</button>
+</dialog>
 <main class="max-w-xl mx-auto">
 <nav class="app-nav" aria-label="메뉴">
 <a href="/" aria-current={!manage ? 'page' : undefined}>키 발급</a>
@@ -33,6 +46,6 @@ const { manage = false } = Astro.props;
 <a id="manage-link" href="/connections">계정·네트워크 등록하기 →</a>
 </section>
 <slot />
-<footer class="text-xs text-zinc-500 leading-loose text-center pt-4 pb-12">내 계정에서 운영하는 작은 키 데스크.<br>iOS Safari: 공유 → 홈 화면에 추가<br>Android Chrome: 메뉴 → 홈 화면에 추가 / 앱 설치</footer>
+<footer class="text-xs text-zinc-500 leading-loose text-center pt-4 pb-12">내 계정에서 운영하는 작은 키 데스크. · 온라인 전용</footer>
 </main>
 </body></html>
