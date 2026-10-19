@@ -51,6 +51,8 @@ With Access enabled at deployment, even setup requires login. If omitted, only s
 
 ## Use
 
+Use **Issue keys** (`/`) for issuance and **Accounts and networks** (`/connections`) for profiles and API tokens. On first use, add a profile, register a network and its token, then open issuance. Registration and verification errors appear beside the form with an error code. Single choices are selected automatically, and navigation preserves the selected connection.
+
 - Create an account profile with a display name and expected owner, then register a tailnet identifier and **personal API access token (`tskey-api-`)**. Use a user-owned token, not OAuth credentials.
 - Registration verifies access to the tailnet's key list. The expected owner is **administrator-supplied and unverified**. Successful listing does not prove the owner's identity or permission to issue keys. Token expiry dates are also administrator-supplied.
 - Select an account and network, issue a key, check the selected connection, expected owner, and expiration, then copy and deliver it privately yourself.
