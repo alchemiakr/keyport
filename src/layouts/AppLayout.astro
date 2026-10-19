@@ -1,0 +1,38 @@
+---
+import "../styles/global.css";
+const { manage = false } = Astro.props;
+---
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#122b26"><meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Keyport">
+<link rel="manifest" href="/manifest.webmanifest"><link rel="icon" href="/icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/icon-192.png">
+<script type="module" src="/app.js"></script>
+<title>{manage ? "Keyport · Connections" : "Keyport · Tailscale Auth Keys"}</title><meta name="description" content="Issue single-use Tailscale auth keys on your own Cloudflare account.">
+</head>
+<body>
+<header class="max-w-3xl mx-auto min-h-22 flex items-center justify-between gap-4 text-sm"><a class="flex items-center gap-2 text-lg font-semibold no-underline tracking-tight" href="/" aria-label="Keyport 홈"><img src="/icon.svg" alt="" width="36" height="36">keyport</a><a href="/cdn-cgi/access/logout">로그아웃</a></header>
+<main class="max-w-xl mx-auto">
+<nav class="app-nav" aria-label="메뉴">
+<a href="/" aria-current={!manage ? 'page' : undefined}>키 발급</a>
+<a href="/connections" aria-current={manage ? 'page' : undefined}>계정·네트워크 관리</a>
+</nav>
+<div class="py-7"><h1 class="text-3xl font-semibold tracking-tight mb-3">{manage ? '계정·네트워크 관리' : '기기 등록 키'}</h1><p>{manage ? 'Tailscale 계정 프로필과 API 토큰을 등록하고 관리하세요.' : '저장된 네트워크를 선택해 일회용 키를 발급하세요.'}</p></div>
+<p id="identity" class="muted"></p>
+<div id="notice" role="status" aria-live="polite" tabindex="-1"></div>
+<p id="offline" hidden>오프라인입니다. 연결 등록·교체·발급은 온라인에서만 가능합니다.</p>
+<a id="reauth" hidden href={manage ? '/connections' : '/'}>Access 다시 로그인</a>
+<section class="card" aria-labelledby="selection-title">
+<h2 id="selection-title">{manage ? '관리할 계정·네트워크' : '발급할 계정·네트워크'}</h2>
+<label for="profile-select">계정 프로필</label><select id="profile-select" required><option value="">계정을 선택하세요</option></select>
+<label for="connection-select">네트워크</label><select id="connection-select" required><option value="">네트워크를 선택하세요</option></select>
+<div id="connection-info" class="details">먼저 계정 프로필과 네트워크를 선택해 주세요.</div>
+<p id="empty-guidance" class="muted" hidden></p>
+<a id="manage-link" href="/connections">계정·네트워크 등록하기 →</a>
+</section>
+<slot />
+<footer class="text-xs text-zinc-500 leading-loose text-center pt-4 pb-12">내 계정에서 운영하는 작은 키 데스크.<br>iOS Safari: 공유 → 홈 화면에 추가<br>Android Chrome: 메뉴 → 홈 화면에 추가 / 앱 설치</footer>
+</main>
+</body></html>

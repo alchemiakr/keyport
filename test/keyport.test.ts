@@ -70,7 +70,7 @@ afterAll(() => { globalThis.fetch = nativeFetch; sqlite.close(); });
 test('초기 설정 전에는 안내 자산만 공개하고 API·앱 자산·발급을 차단한다', async () => {
   env.TOKEN_ENCRYPTION_KEY = '';
   assert.equal((await request('/')).status, 200);
-  for (const [path, method] of [['/app.js', 'GET'], ['/api/profiles', 'GET'], ['/api/connections/not-real/issue', 'POST']]) assert.equal((await request(path, method)).status, 503);
+  for (const [path, method] of [['/app.js', 'GET'], ['/connections', 'GET'], ['/connections.html', 'GET'], ['/api/profiles', 'GET'], ['/api/connections/not-real/issue', 'POST']]) assert.equal((await request(path, method)).status, 503);
   assert.equal(upstream.length, 0);
 });
 test('설정 후보는 현재 요청에서만 읽고 인증·설정 저장에 사용하지 않는다', async () => {

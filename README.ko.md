@@ -34,8 +34,8 @@ Access 로그인 정보가 있으면 팀 도메인·단일 AUD·이메일 후보
 
 1. Worker URL을 열고 Access 로그인 후 **설정 wizard**로 들어갑니다. 별도 CLI 설치는 필요 없습니다.
 2. Worker 전체 Access 보호와 기존 Access 앱의 실제 관리자 이메일 허용 정책을 확인합니다. 앱을 중복 생성하지 말고 기존 AUD 태그를 사용합니다.
-3. 브라우저에서 암호화 키를 생성하고 복구 파일을 안전하게 보관합니다.
-4. wizard가 준비한 다섯 값을 Worker **Settings → Variables and Secrets**에 **Secret**으로 저장한 뒤 해당 설정을 Deploy합니다.
+3. 브라우저에서 암호화 키를 생성하고 복사 또는 복구 파일 다운로드를 선택합니다. 암호화된 보관함에 보관하며 클립보드만 백업으로 사용하지 않습니다.
+4. wizard가 준비한 다섯 값을 Worker **Settings → Variables and Secrets**에 **Secret**으로 저장한 뒤 해당 설정을 Deploy합니다. 앱 이동 버튼은 Secret을 저장하지 않습니다.
 5. 앱에서 계정 프로필을 만들고 Tailnet과 해당 사용자의 **Tailscale API 토큰**을 등록합니다. Tailscale 토큰은 D1에 암호화하여 저장하며 다시 보여주지 않습니다.
 
 D1은 자동 생성·바인딩되므로 DB ID를 복사하지 않습니다. 버튼이 저장소 복제·Workers Builds 연결·리소스 생성·배포를 자동화하며, Access 정책·화면 선택값·필요한 토큰 권한·앱 Secret 설정은 명시적인 설치 단계로 남습니다. 실제 빈 Cloudflare 계정에서의 종단 검증은 아직 하지 않았습니다. [배포 버튼 공식 안내](https://developers.cloudflare.com/workers/platform/deploy-buttons/)
@@ -49,6 +49,8 @@ Worker Previews는 `wrangler versions upload`가 아닌 `bunx wrangler preview`�
 배포 시 Access를 켜면 설치 wizard부터 로그인이 필요합니다. Access를 빠뜨려도 초기 설정 전에는 설치 안내만 공개되고 관리 UI·API는 차단됩니다. 첫 방문자를 관리자로 등록하지 않습니다.
 
 ## 사용
+
+**키 발급**(`/`)과 **계정·네트워크 관리**(`/connections`) 메뉴를 구분합니다. 첫 사용은 관리 메뉴에서 프로필 → 네트워크·API 토큰 순서로 등록한 뒤 키 발급 메뉴로 이동하세요. 등록·검증 오류는 해당 폼에 코드와 함께 표시됩니다. 계정이나 네트워크가 하나면 자동 선택하며, 메뉴 이동 시 선택을 유지합니다.
 
 - 계정 프로필의 표시 이름과 예상 소유자를 입력하고, 해당 프로필에 Tailnet 식별자와 **사용자 API 토큰(`tskey-api-`)**을 등록합니다. OAuth 자격 증명은 받지 않습니다.
 - 등록 시 해당 Tailnet의 키 목록 접근을 검증합니다. 예상 소유자는 **관리자 입력·미검증**이며, 키 목록 조회 성공이 실제 발급 권한이나 소유자 신원을 보증하지 않습니다. 토큰 만료 예정일도 관리자 입력입니다.

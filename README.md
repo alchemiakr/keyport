@@ -35,8 +35,8 @@ The wizard prefills team domain, a single AUD, and your email from the Access lo
 
 1. Open the Worker URL and sign in through Access to launch the **setup wizard**. No local CLI is needed.
 2. Confirm Worker-wide Access protection and restrict the existing Access application to the actual administrator emails. Reuse its AUD tag instead of creating a duplicate application.
-3. Generate an encryption key in your browser and secure the recovery file.
-4. Save the five values prepared by the wizard as **Secrets** under Worker **Settings → Variables and Secrets**, then deploy those settings.
+3. Generate an encryption key in your browser, then copy it or download a recovery file. Store it in an encrypted vault; the clipboard alone is not a backup.
+4. Save the five values prepared by the wizard as **Secrets** under Worker **Settings → Variables and Secrets**, then deploy those settings. The app link only navigates; it does not save Secrets.
 5. Open the app, add an account profile, and register a tailnet with its **Tailscale personal API token**. Tailscale tokens are encrypted in D1 and never shown again.
 
 D1 is provisioned and bound automatically; no database ID copying is required. The button automates repository cloning, Workers Builds integration, resource provisioning, and deployment. Access policies, dashboard selections, token permissions when needed, and application Secrets remain explicit setup steps. End-to-end installation in a fresh Cloudflare account is not yet verified. [Official deployment guide](https://developers.cloudflare.com/workers/platform/deploy-buttons/)
@@ -50,6 +50,8 @@ If an earlier attempt already created a cloned repository, synchronize the lates
 With Access enabled at deployment, even setup requires login. If omitted, only setup instructions can be public; the management UI and APIs remain blocked until configuration is complete. The first visitor never becomes an administrator automatically.
 
 ## Use
+
+Use **Issue keys** (`/`) for issuance and **Accounts and networks** (`/connections`) for profiles and API tokens. On first use, add a profile, register a network and its token, then open issuance. Registration and verification errors appear beside the form with an error code. Single choices are selected automatically, and navigation preserves the selected connection.
 
 - Create an account profile with a display name and expected owner, then register a tailnet identifier and **personal API access token (`tskey-api-`)**. Use a user-owned token, not OAuth credentials.
 - Registration verifies access to the tailnet's key list. The expected owner is **administrator-supplied and unverified**. Successful listing does not prove the owner's identity or permission to issue keys. Token expiry dates are also administrator-supplied.
