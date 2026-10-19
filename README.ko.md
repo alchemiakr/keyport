@@ -61,6 +61,12 @@ Worker Previews는 `wrangler versions upload`가 아닌 `bunx wrangler preview`�
 - 발급은 자동 재시도하지 않습니다. 타임아웃·불완전 응답·`pending` 기록은 성공 여부를 알 수 없는 상태입니다. Tailscale 콘솔을 확인하고 불필요한 키를 폐기한 뒤 필요할 때 새로 발급하세요.
 - 사용자 API 토큰의 만료(최대 90일), 발급 키의 24시간 만료, 등록된 기기의 노드 키 만료는 각각 다릅니다. 토큰은 만료 전에 연결 관리에서 교체합니다. [Tailscale API 인증](https://tailscale.com/docs/reference/tailscale-api), [기기 등록 키](https://tailscale.com/docs/features/access-control/auth-keys)
 
+## 앱으로 설치
+
+초기 설정 후 사용하는 앱 주소에서 Access 로그인하고, 상단 **앱 설치**를 누르세요. 지원되는 Chrome·Edge는 설치 창을 열고, 그렇지 않으면 브라우저 설치 메뉴를 안내합니다. iPhone·iPad는 Safari → 더 보기/공유 → 홈 화면에 추가에서 **웹 앱으로 열기**가 보이면 켜고 추가하세요. 독립 실행 중에는 설치 안내를 숨깁니다.
+
+Access로 보호된 manifest도 인증을 포함해 가져옵니다. 설치가 인증을 대신하지 않으므로 필요하면 다시 로그인합니다. 재인증 링크에는 선택한 프로필·네트워크를 유지합니다. 등록·토큰 교체·발급은 온라인 전용이며 오프라인 요청을 저장하거나 자동 재전송하지 않습니다. 재실행 시 키·토큰을 복원하지 않습니다. 도메인을 바꾸면 새 주소에서 다시 설치하세요. 실제 iOS·Android 설치 앱의 인증 흐름은 실기기 검증 항목으로 남아 있습니다.
+
 ## 구성과 보호
 
 Astro 정적 페이지 + UnoCSS + TypeScript Worker + D1 하나입니다. 프런트엔드 런타임 프레임워크, KV, R2, Durable Objects, 서비스 워커, 분석 스크립트는 사용하지 않습니다.

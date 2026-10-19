@@ -62,6 +62,12 @@ Use **Issue keys** (`/`) for issuance and **Accounts and networks** (`/connectio
 - Issuance is never retried automatically. Timeouts, incomplete responses, and `pending` audit records can mean the result is unknown. Check the Tailscale console and revoke unwanted keys before issuing another if needed.
 - Personal API token expiry (up to 90 days), the issued key's 24-hour expiry, and device node key expiry are separate. Replace API tokens before they expire. [API authentication](https://tailscale.com/docs/reference/tailscale-api), [auth keys](https://tailscale.com/docs/features/access-control/auth-keys)
 
+## Install as an app
+
+After setup, open the configured app URL, sign in through Access, and select **앱 설치** in the header. Supported Chrome/Edge browsers can show a native install prompt; otherwise use the browser's install menu. On iPhone/iPad, use Safari → More/Share → Add to Home Screen, enable **Open as Web App** if shown, then Add. Installation guidance is hidden in standalone mode.
+
+The manifest is fetched with credentials because Access protects it. Installation does not bypass Access: sign in again when requested. Reauthentication links preserve the selected profile and network. Registration, token replacement, and issuance require an online connection; requests are never queued or replayed. Keys and tokens are not restored when reopening. Install again at the new URL after switching domains. Actual iOS/Android installed-app authentication remains a device verification item.
+
 ## Architecture and security
 
 Astro static pages, UnoCSS, a TypeScript Worker, and one D1 database. No frontend runtime framework, KV, R2, Durable Objects, service worker, or analytics scripts.

@@ -78,6 +78,7 @@ function updateControls() {
   if (p) query.set('profile', p.id);
   if (c) query.set('connection', c.id);
   const suffix = query.size ? `?${query}` : '';
+  $('reauth').href = `${location.pathname}${suffix}`;
   $('manage-link').href = `/connections${suffix}`;
   $('manage-link').hidden = !!$('connection-form');
   for (const link of document.querySelectorAll('.app-nav a')) link.href = `${new URL(link.href).pathname}${suffix}`;

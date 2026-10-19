@@ -7,10 +7,10 @@
 Bun 1.4.2로 도구·설치·CI·테스트를 전환했습니다. `bun.lock`을 사용하며 npm lockfile은 제거했습니다. Wrangler는 Bun 강제 실행 시 로컬 요청이 멈춰 `bunx wrangler`로 Node 24 런타임을 따릅니다. Astro·TypeScript·테스트는 Bun 런타임으로 실행합니다.
 
 - Astro 정적 빌드·UnoCSS 생성·TypeScript 검사·브라우저 ES 모듈 문법 검사.
-- GitHub Actions의 Ubuntu/Bun에서도 타입 생성 일치·타입 검사·12개 테스트·Astro 빌드·D1 마이그레이션/재실행·Worker 배포 dry-run 통과. Worker Previews 명령은 도움말 실행으로 확인하며 실제 배포는 미검증.
+- GitHub Actions의 Ubuntu/Bun에서도 타입 생성 일치·타입 검사·19개 테스트·Astro 빌드·D1 마이그레이션/재실행·Worker 배포 dry-run 통과. Worker Previews 명령은 도움말 실행으로 확인하며 실제 배포는 미검증.
 - Worker 배포 dry-run: 정적 자산·Worker 묶음·DB/ASSETS 바인딩 확인. 에이전트가 실제 클라우드 배포를 수행하지는 않음.
 - Wrangler/workerd의 로컬 D1에 초기 마이그레이션 적용 성공. 재실행 시 미적용 마이그레이션 없음.
-- `bun:test`·`bun:sqlite`로 Bun 테스트 12개 통과. 실제 SQLite 제약·쿼리와 합성 RSA 서명 JWT를 사용하고 JWKS/Tailscale 네트워크는 모의 처리.
+- `bun:test`·`bun:sqlite`로 Bun 테스트 19개 통과. 실제 SQLite 제약·쿼리와 합성 RSA 서명 JWT를 사용하고 JWKS/Tailscale 네트워크는 모의 처리.
 - 초기 미설정·위조 JWT/신원 헤더·만료·다른 issuer/AUD·비허용 관리자·대체 도메인 차단과 upstream 호출 없음.
 - 다른 Origin·GET 발급·임의 Tailnet URL 거부.
 - 두 프로필·두 Tailnet, 같은 Tailnet의 다른 사용자 토큰 분리, 발급 시 클라이언트 제공 토큰/조건 무시.
@@ -35,6 +35,14 @@ Ego Chromium에서 확인했습니다. 실제 iOS Safari/Android Chrome 또는 �
 - 관리 화면도 390px viewport에서 가로 넘침 없음과 PWA manifest 연결 확인.
 - 오프라인 에뮬레이션에서 안내·발급 거부. 복구 후 자동 발급 없음. 전체 시나리오 발급 호출 1회.
 - 자동화 도구의 탭 전환도 발급 결과를 지우므로 결과·복사 검증은 한 브라우저 실행 안에서 수행했습니다.
+
+## PWA 설치·인증 보완
+
+실제 배포의 manifest 링크에 `crossorigin="use-credentials"`가 없어 Chromium에서 manifest 파싱/네트워크 오류·no-manifest를 확인했습니다. 같은 로그인 페이지에서 해당 속성을 적용하자 정상 manifest·standalone·아이콘을 읽었습니다. Access 정책을 우회하거나 manifest를 공개하지 않습니다. [인증된 manifest](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Manifest/index.html)
+
+인증 쿠키가 필요한 로컬 fixture에서 변경 전 설치 가능성 오류를 재현했고, 변경 후 `Page.getAppManifest` 정상·`Page.getInstallabilityErrors` 오류 0개를 확인했습니다. 서비스 워커·Cache Storage를 추가하지 않았습니다. 설치 버튼·네이티브 prompt·수동 설치 안내·독립 실행 안내 숨김을 구현하고, 네이티브 prompt 수락/취소/실패·iOS 분기·standalone/appinstalled를 회귀 테스트했습니다. 전체 테스트 19개입니다.
+
+Chromium과 합성 API에서 온라인 발급 1회 후 오프라인 발급 차단·온라인 복구 후 자동 재발급 없음, 세션 만료 안내·선택을 포함한 재인증 링크·재진입 후 선택 유지·이전 키 복원 없음, localStorage/sessionStorage 0·Cache Storage 0·서비스 워커 등록 0을 확인했습니다. iPhone UA·390px에서 설치 안내·네이티브 dialog와 가로 넘침 없음도 확인했습니다. 실제 OS 설치나 iOS Safari·Android Chrome의 Access/IdP 복귀 검증을 대신하지 않습니다.
 
 ## 업데이트 자동화
 
